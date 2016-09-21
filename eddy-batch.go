@@ -64,9 +64,17 @@ func main() {
 
 			case "load":
 				if *fileName == "" {
-					log.Fatalf("File argument is required. See --help.")
+					fmt.Println("please enter a file")
+					var newfile string
+					if _, err := fmt.Scanf("%s", &newfile); err != nil {
+						fmt.Printf("%s\n", err)
+						return
+					}
+					uploadFile(service, newfile)
+				} else {
+					uploadFile(service, "")
 				}
-				uploadFile(service)
+
 
 			case "listfiles":
 				listFiles(service)
@@ -86,7 +94,7 @@ func main() {
 				if *fileName == "" {
 					log.Fatalf("File argument is required. See --help.")
 				}
-				uploadFile(service)
+				uploadFile(service, "")
 
 			case "listfiles":
 				listFiles(service)
@@ -96,13 +104,7 @@ func main() {
 
 			}
 		}
-
-
-
-
-	//if *command == "" {
-	//	fmt.Printf("please enter a command eg --cmd=list ")
-	//}
+ //}
 
 
 
@@ -146,20 +148,32 @@ func listBuckets(service *storage.Service) {
 
 
 //<editor-fold defaultstate="collapsed"  desc="==  utility function  upload files  ==" >
-func uploadFile(service *storage.Service) {
+func uploadFile(service *storage.Service, newFile string) {
 
 	// Insert an object into a bucket.
 	object := &storage.Object{Name: objectName}
-	file, err := os.Open(*fileName)
-	if err != nil {
-		fatalf(service, "Error opening %q: %v", *fileName, err)
-	}
-	if res, err := service.Objects.Insert(bucketName, object).Media(file).Do(); err == nil {
-		fmt.Printf("Created object %v at location %v\n\n", res.Name, res.SelfLink)
-	} else {
-		fatalf(service, "Objects.Insert failed: %v", err)
-	}
+	if *fileName == "" {
+		file, err := os.Open(newFile)
+		if err != nil {
+			fatalf(service, "Error opening %q: %v", newFile, err)
+		}
+		if res, err := service.Objects.Insert(bucketName, object).Media(file).Do(); err == nil {
+			fmt.Printf("Created object %v at location %v\n\n", res.Name, res.SelfLink)
+		} else {
+			fatalf(service, "Objects.Insert failed: %v", err)
+		}
 
+	} else {
+		file, err := os.Open(*fileName)
+		if err != nil {
+			fatalf(service, "Error opening %q: %v", *fileName, err)
+		}
+		if res, err := service.Objects.Insert(bucketName, object).Media(file).Do(); err == nil {
+			fmt.Printf("Created object %v at location %v\n\n", res.Name, res.SelfLink)
+		} else {
+			fatalf(service, "Objects.Insert failed: %v", err)
+		}
+	}
 }
 //</editor-fold>
 

@@ -85,6 +85,8 @@ func main() {
 			}
 
 		} else {
+
+			//<editor-fold defaultstate="collapsed"  desc="==  command flag exist switch ==" >
 			switch *command {
 
 			case "list":
@@ -103,23 +105,8 @@ func main() {
 				getRemoteUrl(service)
 
 			}
+			//</editor-fold>
 		}
- //}
-
-
-
-
-	//// If the bucket already exists and the user has access, warn the user
-	//if _, err := service.Buckets.Get(bucketName).Do(); err == nil {
-	//	fmt.Printf("Bucket %s already exists - skipping buckets.insert call.", bucketName)
-	//} else {
-	//	fatalf(service, "Failed creating bucket %s: %v", bucketName, err)
-	//}
-	//
-
-
-
-
 
 }
 
@@ -159,6 +146,7 @@ func uploadFile(service *storage.Service, newFile string) {
 		}
 		if res, err := service.Objects.Insert(bucketName, object).Media(file).Do(); err == nil {
 			fmt.Printf("Created object %v at location %v\n\n", res.Name, res.SelfLink)
+			uploadFileContinue(service )
 		} else {
 			fatalf(service, "Objects.Insert failed: %v", err)
 		}
@@ -170,12 +158,35 @@ func uploadFile(service *storage.Service, newFile string) {
 		}
 		if res, err := service.Objects.Insert(bucketName, object).Media(file).Do(); err == nil {
 			fmt.Printf("Created object %v at location %v\n\n", res.Name, res.SelfLink)
+			uploadFileContinue(service )
 		} else {
 			fatalf(service, "Objects.Insert failed: %v", err)
 		}
 	}
 }
 //</editor-fold>
+
+
+func uploadFileContinue(service *storage.Service) {
+
+	fmt.Println("please enter a new file or 'QQ' to quiit ")
+	var newfile string
+	if _, err := fmt.Scanf("%s", &newfile); err != nil {
+		fmt.Printf("%s\n", err)
+		return
+	}
+	switch newfile {
+
+	case "QQ":
+		log.Fatalf("bye!!")
+
+	default:
+		uploadFile(service, newfile)
+
+	}
+
+
+}
 
 
 //<editor-fold defaultstate="collapsed"  desc="==  utility function  list files  ==" >
